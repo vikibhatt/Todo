@@ -16,6 +16,12 @@ const todoSchema = new Schema({
         type: Boolean,
         default: false
     },
+    submittedBy: {
+        type: String
+    },
+    dataSubmitted: {
+        type: String
+    },
     owner: {
         type:String,
         required: true

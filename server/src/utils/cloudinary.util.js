@@ -1,29 +1,30 @@
-import {v2 as cloudnary} from 'cloudinary'
+import {v2 as cloudinary} from 'cloudinary'
 import fs from 'fs'
 
-cloudnary.config({
+cloudinary.config({
   cloud_name: process.env.CLOUDNARY_CLOUD_NAME,
   api_key: process.env.CLOUDNARY_API_KEY,
   api_secret: process.env.CLOUDNARY_API_SECRET,
   secure: true,
 });
 
-const addFilesToCloudnary = async(filePath)=>{
+
+const addFilesToCloudnary = async(localFilePath)=>{
     try {
-        if(!filePath) return null
+        if(!localFilePath) return null
 
         const targetFolder = "samples/trialApi";
 
-        const response = await cloudnary.uploader.upload(filePath,
-            {
-                resource_type: 'auto',
-                folder: targetFolder
-            })
+        const response = await cloudinary.uploader.upload(localFilePath,{
+            resource_type: "auto",
+            folder: targetFolder
+        })
+        console.log(response);
 
-        fs.unlinkSync(filePath)
+        fs.unlinkSync(localFilePath)
         return response
     } catch (error) {
-        fs.unlinkSync(filePath)
+        fs.unlinkSync(localFilePath)
         return null
     }
 }
@@ -31,7 +32,7 @@ const addFilesToCloudnary = async(filePath)=>{
 const getPublicIdFromUrl = (url) => {
     const publicIdMatches = url.match(/\/v\d+\/samples\/trialApi\/(.+?)\.\w+/);
     return publicIdMatches ? publicIdMatches[1] : null;
-};
+}; 
 
 const deleteFilesFromCloudnary = async(oldFilePath, type) => {
     if(oldFilePath){
@@ -39,8 +40,8 @@ const deleteFilesFromCloudnary = async(oldFilePath, type) => {
             const publicId = getPublicIdFromUrl(oldFilePath);
             console.log("Public ID to delete:", `samples/trialApi/${publicId}`);
             let result
-            if(type === 'video'){
-                result = await cloudnary.uploader.destroy(`samples/trialApi/${publicId}`,
+            if(type.toString() === 'video'.toString()){
+                result = await cloudinary.uploader.destroy(`samples/trialApi/${publicId}`,
                     {
                         resource_type: 'video',
                         invalidate: true
@@ -48,7 +49,7 @@ const deleteFilesFromCloudnary = async(oldFilePath, type) => {
                 )
             }
             else{
-                result = await cloudnary.uploader.destroy(`samples/trialApi/${publicId}`,
+                result = await cloudinary.uploader.destroy(`samples/trialApi/${publicId}`,
                     {
                         resource_type: 'image',
                         invalidate: true
